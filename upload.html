@@ -1,0 +1,83 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>上传图片 - www.jbxue.com</title>
+    <script src="js/jquery-1.7.2.min.js"></script>
+    <style>
+
+    </style>
+</head>
+<script src="js/jquery.form.js"></script>
+<script>
+    //判断浏览器是否支持FileReader接口
+    if (typeof FileReader == 'undefined') {
+        document.getElementById("xmTanDiv").InnerHTML = "<h1>当前浏览器不支持FileReader接口</h1>";
+        //使选择控件不可操作
+        //document.getElementById("fileto1").setAttribute("disabled", "disabled");
+    }
+    //选择图片，马上预览
+    function xmTanUploadImg(obj) {
+        var file = obj.files[0];
+
+        console.log(obj);console.log(file);
+        console.log("file.size = " + file.size);  //file.size 单位为byte
+
+        var reader = new FileReader();
+
+        //读取文件过程方法
+        reader.onloadstart = function (e) {
+            console.log("开始读取....");
+        }
+        reader.onprogress = function (e) {
+            console.log("正在读取中....");
+        }
+        reader.onabort = function (e) {
+            console.log("中断读取....");
+        }
+        reader.onerror = function (e) {
+            console.log("读取异常....");
+        }
+        reader.onload = function (e) {
+            console.log("成功读取....");
+
+            var img = document.getElementById("xmTanImg");
+            img.src = e.target.result;
+            //或者 img.src = this.result;  //e.target == this
+        }
+
+        reader.readAsDataURL(file)
+    }
+
+    function uploadPic() {
+        // 上传设置
+        var options = {
+            // 规定把请求发送到那个URL
+            url: "upimage.php",
+            // 请求方式
+            type: "post",
+            // 请求成功时执行的回调函数
+            success: function(data) {
+                alert(data);
+            },
+            error : function () {
+                alert("未知错误");
+            }
+        };
+
+        $("#myForm").ajaxSubmit(options);
+    }
+
+</script>
+<body>
+<form name="myForm" id="myForm" enctype="multipart/form-data" action="upimage.php" method="post">
+    <input type="text" name="imgDogCode" id="imgDogCode"/>
+    <input type="file" name="fileto1" id="fileto1" onchange="xmTanUploadImg(this)"/>
+    <input type="file" name="fileto2" id="fileto2" onchange="xmTanUploadImg(this)"/>
+    <input type="file" name="fileto3" id="fileto3" onchange="xmTanUploadImg(this)"/>
+    <input type="button" value="上传" id="bt">
+    <input type="button" id="btn" value="submit" onclick="uploadPic()">
+    <img id="xmTanImg" style="width: 200px;height: 150px"/>
+    <div id="xmTanDiv"></div>
+</form>
+</body>
+</html>
